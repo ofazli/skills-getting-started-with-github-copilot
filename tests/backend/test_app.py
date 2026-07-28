@@ -1,21 +1,14 @@
 import uuid
 
-from fastapi.testclient import TestClient
 
-from src.app import app
-
-
-client = TestClient(app)
-
-
-def test_at_least_four_activities_are_available():
+def test_at_least_four_activities_are_available(client):
     response = client.get("/activities")
 
     assert response.status_code == 200
     assert len(response.json()) >= 4
 
 
-def test_duplicate_signup_is_rejected():
+def test_duplicate_signup_is_rejected(client):
     activity_name = "Chess Club"
     email = f"duplicate-{uuid.uuid4().hex}@example.com"
 
@@ -27,7 +20,7 @@ def test_duplicate_signup_is_rejected():
     assert second_response.json()["detail"] == "Student already signed up for this activity"
 
 
-def test_unregister_removes_student_from_activity():
+def test_unregister_removes_student_from_activity(client):
     activity_name = "Chess Club"
     email = f"remove-{uuid.uuid4().hex}@example.com"
 
