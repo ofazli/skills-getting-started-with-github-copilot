@@ -27,15 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
-        const participantsMarkup = details.participants.length
-          ? details.participants.map((participant) => `
-            <li class="participant-chip">
-              <span>${participant}</span>
-              <button type="button" class="remove-participant" data-activity="${name}" data-email="${participant}" aria-label="Remove ${participant}">
-                ×
-              </button>
-            </li>`).join("")
-          : '<li class="participant-chip empty">No participants yet</li>';
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
@@ -44,11 +35,40 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           <div class="participants-section">
             <h5>Participants</h5>
-            <ul class="participants-list">
-              ${participantsMarkup}
-            </ul>
           </div>
         `;
+
+        const participantsList = document.createElement("ul");
+        participantsList.className = "participants-list";
+
+        if (details.participants.length) {
+          details.participants.forEach((participant) => {
+            const li = document.createElement("li");
+            li.className = "participant-chip";
+
+            const span = document.createElement("span");
+            span.textContent = participant;
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "remove-participant";
+            button.dataset.activity = name;
+            button.dataset.email = participant;
+            button.setAttribute("aria-label", `Remove ${participant}`);
+            button.textContent = "×";
+
+            li.appendChild(span);
+            li.appendChild(button);
+            participantsList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.className = "participant-chip empty";
+          li.textContent = "No participants yet";
+          participantsList.appendChild(li);
+        }
+
+        activityCard.querySelector(".participants-section").appendChild(participantsList);
 
         activitiesList.appendChild(activityCard);
 
